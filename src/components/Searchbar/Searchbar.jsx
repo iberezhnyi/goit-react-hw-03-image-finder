@@ -1,14 +1,34 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 import css from './Searchbar.module.css';
 
 class Searchbar extends Component {
+  state = {
+    query: '',
+  };
+
+  handleInput = evt => {
+    this.setState({ query: evt.currentTarget.value.toLowerCase() });
+  };
+
   handleSubmit = evt => {
     evt.preventDefault();
 
-    const query = evt.target.query.value;
+    if (this.state.query.trim() === '') {
+      toast.warn('Please enter your new search query');
+      return;
+    }
 
-    this.props.onSubmit(query);
+    this.props.onSubmit(this.state.query);
+
+    this.resetQuery();
+  };
+
+  resetQuery = () => {
+    this.setState({
+      query: '',
+    });
   };
 
   render() {
@@ -26,6 +46,7 @@ class Searchbar extends Component {
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
+            onChange={this.handleInput}
           />
         </form>
       </header>

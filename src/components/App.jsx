@@ -1,10 +1,12 @@
 import { Component } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import css from './App.module.css';
 import getAllImages from 'api/images';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from 'components/Button/Button';
 import Loader from './Loader/Loader';
-import css from './App.module.css';
 
 class App extends Component {
   state = {
@@ -55,7 +57,7 @@ class App extends Component {
   };
 
   render() {
-    const { page, query, loadMoreBtn, images, isLoading, error } = this.state;
+    const { loadMoreBtn, images, isLoading, error } = this.state;
 
     return (
       <div className={css.app}>
@@ -63,18 +65,15 @@ class App extends Component {
 
         {error && <h1>{error}</h1>}
 
-        <ImageGallery
-          images={images}
-          query={query}
-          onLoadMore={this.onLoadMore}
-          page={page}
-        />
+        <ImageGallery images={images} />
 
         {isLoading && <Loader />}
 
         {!isLoading && loadMoreBtn && images?.length !== 0 && (
-          <Button onLoadMore={this.onLoadMore} page={this.state.page} />
+          <Button onLoadMore={this.onLoadMore} />
         )}
+
+        <ToastContainer />
       </div>
     );
   }

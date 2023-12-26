@@ -6,8 +6,7 @@ import css from './ImageGallery.module.css';
 const ImageGallery = ({ images }) => {
   return (
     <ul className={css.gallery}>
-      {images &&
-        images.map(el => <ImageGalleryItem key={nanoid()} image={el} />)}
+      {images && images.map(el => <ImageGalleryItem key={el.id} image={el} />)}
     </ul>
   );
 };
