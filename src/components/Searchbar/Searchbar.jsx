@@ -8,8 +8,8 @@ class Searchbar extends Component {
     query: '',
   };
 
-  handleInput = evt => {
-    this.setState({ query: evt.currentTarget.value.toLowerCase() });
+  handleInput = event => {
+    this.setState({ query: event.currentTarget.value.toLowerCase() });
   };
 
   handleSubmit = evt => {
