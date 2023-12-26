@@ -1,16 +1,83 @@
-export const App = () => {
-  return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      React homework template
-    </div>
-  );
-};
+import { Component } from 'react';
+import getAllImages from 'api/images';
+import Searchbar from './Searchbar/Searchbar';
+import ImageGallery from './ImageGallery/ImageGallery';
+import Button from 'components/Button/Button';
+import Loader from './Loader/Loader';
+import css from './App.module.css';
+
+class App extends Component {
+  state = {
+    images: [],
+    query: null,
+    page: 1,
+    isLoading: false,
+    error: '',
+    loadMoreBtn: false,
+  };
+
+  componentDidUpdate(_, prevState) {
+    if (
+      this.state.query !== prevState.query ||
+      this.state.page !== prevState.page
+    )
+      this.getImages();
+  }
+
+  onSubmit = query => this.setState({ query, page: 1, images: [] });
+
+  onLoadMore = () => {
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
+  };
+
+  getImages = async () => {
+    try {
+      this.setState({ isLoading: true, error: '' });
+
+      const query = this.state.query;
+      const page = this.state.page;
+
+      const response = await getAllImages(query, page);
+
+      this.setState(prevState => ({
+        images: [...prevState.images, ...response.hits],
+        loadMoreBtn: this.state.page < Math.ceil(response.totalHits / 12),
+      }));
+    } catch (error) {
+      console.log(error);
+
+      this.setState({ error: error.message });
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  };
+
+  render() {
+    const { page, query, loadMoreBtn, images, isLoading, error } = this.state;
+
+    return (
+      <div className={css.app}>
+        <Searchbar onSubmit={this.onSubmit} />
+
+        {error && <h1>{error}</h1>}
+
+        <ImageGallery
+          images={images}
+          query={query}
+          onLoadMore={this.onLoadMore}
+          page={page}
+        />
+
+        {isLoading && <Loader />}
+
+        {!isLoading && loadMoreBtn && images?.length !== 0 && (
+          <Button onLoadMore={this.onLoadMore} page={this.state.page} />
+        )}
+      </div>
+    );
+  }
+}
+
+export default App;
